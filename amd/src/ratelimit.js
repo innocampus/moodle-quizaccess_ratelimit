@@ -12,7 +12,8 @@ import ModalFactory from 'core/modal_factory';
 const form = '#mod_quiz_preflight_form';
 const button = form + ' input#id_submitbutton';
 
-export const init = (maxdelay) => {
+export const init = (maxDelay) => {
+    const maxDelayUntil = Date.now() + maxDelay * 1000;
     $(button).click((e) => {
         e.preventDefault();
         $(button).prop("disabled",true);
@@ -20,9 +21,11 @@ export const init = (maxdelay) => {
             methodname: 'quizaccess_ratelimit_get_waiting_time',
             args: {},
             done: (response) => {
-                if (response.seconds >= maxdelay) {
+                maxDelay = Math.floor((maxDelayUntil - Date.now()) / 1000);
+                maxDelay = Math.max(0, maxDelay);
+                if (response.seconds >= maxDelay) {
                     // Spread the delay between 0 and maxdelay evenly.
-                    const rand = Math.floor(Math.random() * maxdelay);
+                    const rand = Math.floor(Math.random() * maxDelay);
                     delaySubmit(rand, response.message);
                 } else {
                     delaySubmit(response.seconds, response.message);
