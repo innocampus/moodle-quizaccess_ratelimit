@@ -31,6 +31,8 @@ defined('MOODLE_INTERNAL') || die();
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class quizaccess_ratelimit extends quiz_access_rule_base {
+    const MAX_DELAY = 15 * 60;
+
     /**
      * Return an appropriately configured instance of this rule, if it is applicable
      * to the given quiz, otherwise return null.
@@ -54,13 +56,16 @@ class quizaccess_ratelimit extends quiz_access_rule_base {
     public function description() {
         global $PAGE;
 
-        $maxdelay = 15 * 60;
         if ($this->quizobj->has_capability('quizaccess/ratelimit:exempt')) {
             $maxdelay = 0;
         } else if ($this->quiz->timeclose && $this->quiz->timelimit) {
-            // The user should have enough time to take the quiz minus a short safety margin.
+            // The user should have enough time to take the quiz including a short safety margin.
             $maxdelay = max(0, $this->quiz->timeclose - $this->quiz->timelimit - $this->timenow - 2);
+            $maxdelay = min(self::MAX_DELAY, $maxdelay);
+        } else {
+            $maxdelay = self::MAX_DELAY;
         }
+
         $PAGE->requires->js_call_amd('quizaccess_ratelimit/ratelimit', 'init', [$maxdelay]);
 
         return '';
