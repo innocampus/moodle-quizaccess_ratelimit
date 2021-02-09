@@ -25,7 +25,7 @@ If you have read-only database slaves, you must add the table quizaccess_ratelim
 
 The administrator has to specify how many users per second are allowed to start a new quiz attempt.
 
-Users will have too wait, when too many want to start an attempt at the same time.
+Users will have to wait, when too many want to start an attempt at the same time.
 The maximum waiting time is determined by the closing time and the time limit of the quiz
 (in order to guarantee that no user is disadvantaged as a consequence of a delay by the plugin).
 This means there can be still situations when too many users are starting an attempt.
