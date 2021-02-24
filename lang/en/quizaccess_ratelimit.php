@@ -27,6 +27,6 @@ defined('MOODLE_INTERNAL') || die();
 $string['pluginname'] = 'Rate limiting access rule';
 $string['privacy:metadata'] = 'The rate limiting access rule plugin does not store any personal data.';
 $string['ratelimit:exempt'] = 'Bypass the quiz rate limiting';
-$string['setting:rate'] = 'Rate limit (no. of users per second)';
-$string['setting:rate_desc'] = 'Number of users within one second that are allowed to start a new quiz attempt.';
+$string['setting:timeout'] = 'Timeout (ms)';
+$string['setting:timeout_desc'] = 'Minimum timeout between two new quiz attempts in milliseconds.';
 $string['message'] = 'The server is processing many request at the moment. Please wait until your quiz starts in a few seconds.';

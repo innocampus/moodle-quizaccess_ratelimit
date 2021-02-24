@@ -28,10 +28,10 @@ global $ADMIN;
 
 if ($hassiteconfig) {
 
-    $settings->add(new admin_setting_configtext('quizaccess_ratelimit/rate',
-        get_string('setting:rate', 'quizaccess_ratelimit'),
-        get_string('setting:rate_desc', 'quizaccess_ratelimit'),
-        2,
+    $settings->add(new admin_setting_configtext('quizaccess_ratelimit/timeout',
+        get_string('setting:timeout', 'quizaccess_ratelimit'),
+        get_string('setting:timeout_desc', 'quizaccess_ratelimit'),
+        500,
         PARAM_INT));
 
 }

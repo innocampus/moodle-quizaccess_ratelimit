@@ -50,16 +50,16 @@ class manager {
     }
 
     /**
-     * Number of users that are allowed to start a quiz attempt per second.
+     * Number of users that are allowed to start a quiz attempt per second. Returns infinity if there is no limit.
      *
-     * @return int
+     * @return float
      */
-    private static function get_rate() : int {
-        $rate = get_config('quizaccess_ratelimit', 'rate');
-        if ($rate < 1) {
-            $rate = 1;
+    private static function get_rate() : float {
+        $timeout = get_config('quizaccess_ratelimit', 'timeout');
+        if ($timeout < 1) {
+            return INF;
         }
-        return $rate;
+        return 1000. / $timeout;
     }
 
     /**
@@ -73,10 +73,16 @@ class manager {
     public static function get_seconds_to_wait() : int {
         global $DB;
 
+        $rate = self::get_rate();
+
+        // Do not access the database if there is no rate limit.
+        if (is_infinite($rate))
+            return 0;
+
         // Get the number of users that want to start a quiz right now.
         $sql = 'UPDATE {quizaccess_ratelimit}
                 SET counter = GREATEST(1,
-                        counter + 1 - ((extract(epoch from now())::bigint - timemodified) * :rate)
+                        counter + 1 - ((extract(epoch from now())::bigint - timemodified)::real * :rate)
                     ),
                     timemodified = extract(epoch from now())::bigint
                 RETURNING counter';
@@ -85,9 +91,8 @@ class manager {
         // However, this query behaves like a SELECT thanks to the RETURNING part.
         // A problem is that this function tries to read data from a slave database node
         // (if there is any), while this query must be executed on the master.
-        $rate = self::get_rate();
         $number = $DB->get_field_sql($sql, ['rate' => $rate], MUST_EXIST);
 
-        return (int) ($number / $rate);
+        return (int) (($number - 1) / $rate);
     }
 }

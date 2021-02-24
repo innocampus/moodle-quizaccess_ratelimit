@@ -34,5 +34,23 @@ function xmldb_quizaccess_ratelimit_upgrade($oldversion) {
     global $DB;
     $dbman = $DB->get_manager();
 
+    if ($oldversion < 2021022403) {
+        // Delete old setting.
+        unset_config('rate', 'quizaccess_ratelimit');
+
+        $table = new xmldb_table('quizaccess_ratelimit');
+
+        // Drop old integer counter.
+        $oldcounter = new xmldb_field('counter');
+        if ($dbman->field_exists($table, $oldcounter))
+            $dbman->drop_field($table, $oldcounter);
+
+        // Create new float counter.
+        $newcounter = new xmldb_field('counter', XMLDB_TYPE_FLOAT, 10, null, XMLDB_NOTNULL, null, '0');
+        $dbman->add_field($table, $newcounter);
+
+        upgrade_plugin_savepoint(true, 2021022403, 'quizaccess', 'ratelimit');
+    }
+
     return true;
 }
