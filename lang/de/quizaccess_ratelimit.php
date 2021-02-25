@@ -27,6 +27,6 @@ defined('MOODLE_INTERNAL') || die();
 $string['pluginname'] = 'Lastverteilung';
 $string['privacy:metadata'] = 'Das Plugin speichert keine personenbezogenen Daten.';
 $string['ratelimit:exempt'] = 'Umgehen der Lastverteilung';
-$string['setting:timeout'] = 'Timeout (ms)';
-$string['setting:timeout_desc'] = 'Minimaler Abstand zwischen zwei gestarteten Testversuchen in Millisekunden.';
+$string['setting:ms_between_attempts'] = 'Abstand zwischen Versuchen (ms)';
+$string['setting:ms_between_attempts_desc'] = 'Minimaler zeitlicher Abstand zwischen zwei gestarteten Testversuchen in Millisekunden.';
 $string['message'] = 'Der Server verarbeitet gerade viele Anfragen. Bitte warten Sie, bis Ihr Test startet.';

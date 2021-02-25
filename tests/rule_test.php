@@ -61,7 +61,7 @@ class quizaccess_ratelimit_testcase extends advanced_testcase {
         $this->resetAfterTest();
 
         $timeout = 10000000; // Ten thousand seconds.
-        set_config('timeout', $timeout, 'quizaccess_ratelimit');
+        set_config('ms_between_attempts', $timeout, 'quizaccess_ratelimit');
 
         $time = 1614176234;
         $this->set_db_time($time);
@@ -85,7 +85,7 @@ class quizaccess_ratelimit_testcase extends advanced_testcase {
         $this->resetAfterTest();
 
         $timeout = 10001; // Just over ten seconds (to prevent decimal truncating problems).
-        set_config('timeout', $timeout, 'quizaccess_ratelimit');
+        set_config('ms_between_attempts', $timeout, 'quizaccess_ratelimit');
 
         $time = 1614176234;
         $this->set_db_time($time);
@@ -116,7 +116,7 @@ class quizaccess_ratelimit_testcase extends advanced_testcase {
         $this->resetAfterTest();
 
         $timeout = 500; // Half a second.
-        set_config('timeout', $timeout, 'quizaccess_ratelimit');
+        set_config('ms_between_attempts', $timeout, 'quizaccess_ratelimit');
 
         $time = 1614176234;
         $this->set_db_time($time);
@@ -146,7 +146,7 @@ class quizaccess_ratelimit_testcase extends advanced_testcase {
         $this->resetAfterTest();
 
         $timeout = 0; // No timeout.
-        set_config('timeout', $timeout, 'quizaccess_ratelimit');
+        set_config('ms_between_attempts', $timeout, 'quizaccess_ratelimit');
 
         $this->assertEquals(0, \quizaccess_ratelimit\manager::get_seconds_to_wait());
 

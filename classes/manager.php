@@ -55,11 +55,11 @@ class manager {
      * @return float
      */
     private static function get_rate() : float {
-        $timeout = get_config('quizaccess_ratelimit', 'timeout');
-        if ($timeout < 1) {
+        $msbetweenattempts = get_config('quizaccess_ratelimit', 'ms_between_attempts');
+        if ($msbetweenattempts < 1) {
             return INF;
         }
-        return 1000. / $timeout;
+        return 1000. / $msbetweenattempts;
     }
 
     /**

@@ -28,9 +28,9 @@ global $ADMIN;
 
 if ($hassiteconfig) {
 
-    $settings->add(new admin_setting_configtext('quizaccess_ratelimit/timeout',
-        get_string('setting:timeout', 'quizaccess_ratelimit'),
-        get_string('setting:timeout_desc', 'quizaccess_ratelimit'),
+    $settings->add(new admin_setting_configtext('quizaccess_ratelimit/ms_between_attempts',
+        get_string('setting:ms_between_attempts', 'quizaccess_ratelimit'),
+        get_string('setting:ms_between_attempts_desc', 'quizaccess_ratelimit'),
         500,
         PARAM_INT));
 
