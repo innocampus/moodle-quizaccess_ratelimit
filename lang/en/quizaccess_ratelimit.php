@@ -29,4 +29,4 @@ $string['privacy:metadata'] = 'The rate limiting access rule plugin does not sto
 $string['ratelimit:exempt'] = 'Bypass the quiz rate limiting';
 $string['setting:ms_between_attempts'] = 'Time between attempts (ms)';
 $string['setting:ms_between_attempts_desc'] = 'Minimum time between two new quiz attempts in milliseconds.';
-$string['message'] = 'The server is processing many request at the moment. Please wait until your quiz starts in a few seconds.';
+$string['message'] = 'The server is processing many requests at the moment. Please wait until your quiz starts in a few seconds.';
