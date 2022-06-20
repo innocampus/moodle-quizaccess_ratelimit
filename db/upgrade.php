@@ -22,15 +22,18 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-defined('MOODLE_INTERNAL') || die();
-
 /**
  * Function to upgrade quizaccess_ratelimit plugin.
  *
  * @param int $oldversion The version we are upgrading from.
  * @return bool Result.
+ * @throws ddl_exception
+ * @throws ddl_field_missing_exception
+ * @throws ddl_table_missing_exception
+ * @throws downgrade_exception
+ * @throws upgrade_exception
  */
-function xmldb_quizaccess_ratelimit_upgrade($oldversion) {
+function xmldb_quizaccess_ratelimit_upgrade(int $oldversion): bool {
     global $DB;
     $dbman = $DB->get_manager();
 
@@ -42,8 +45,9 @@ function xmldb_quizaccess_ratelimit_upgrade($oldversion) {
 
         // Drop old integer counter.
         $oldcounter = new xmldb_field('counter');
-        if ($dbman->field_exists($table, $oldcounter))
+        if ($dbman->field_exists($table, $oldcounter)) {
             $dbman->drop_field($table, $oldcounter);
+        }
 
         // Create new float counter.
         $newcounter = new xmldb_field('counter', XMLDB_TYPE_FLOAT, 10, null, XMLDB_NOTNULL, null, '0');

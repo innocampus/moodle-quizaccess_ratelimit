@@ -24,6 +24,8 @@
 
 defined('MOODLE_INTERNAL') || die();
 
+require_once($CFG->dirroot . '/mod/quiz/accessrule/accessrulebase.php');
+
 /**
  * Implementation of the quizaccess_ratelimit plugin.
  *
@@ -31,6 +33,10 @@ defined('MOODLE_INTERNAL') || die();
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class quizaccess_ratelimit extends quiz_access_rule_base {
+
+    /**
+     * This is the maximum possible delay (created by this plugin) before a quiz attempt can be started.
+     */
     const MAX_DELAY = 15 * 60;
 
     /**
@@ -42,7 +48,7 @@ class quizaccess_ratelimit extends quiz_access_rule_base {
      *      time limits by the mod/quiz:ignoretimelimits capability.
      * @return quiz_access_rule_base|null the rule, if applicable, else null.
      */
-    public static function make(quiz $quizobj, $timenow, $canignoretimelimits) {
+    public static function make(quiz $quizobj, $timenow, $canignoretimelimits): ?self {
         return new self($quizobj, $timenow);
     }
 
@@ -53,7 +59,7 @@ class quizaccess_ratelimit extends quiz_access_rule_base {
      * @return mixed a message, or array of messages, explaining the restriction
      *         (may be '' if no message is appropriate).
      */
-    public function description() {
+    public function description(): string {
         global $PAGE;
 
         if ($this->quizobj->has_capability('quizaccess/ratelimit:exempt')) {
@@ -77,7 +83,7 @@ class quizaccess_ratelimit extends quiz_access_rule_base {
      * @param int|null $attemptid the id of the current attempt, if there is one,
      *      otherwise null.
      */
-    public function notify_preflight_check_passed($attemptid) {
+    public function notify_preflight_check_passed($attemptid): void {
         global $SESSION;
         unset($SESSION->quizaccess_ratelimit_time);
     }

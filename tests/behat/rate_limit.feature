@@ -1,4 +1,4 @@
-@mod @quizaccess_ratelimit @javascript
+@mod @quizaccess @quizaccess_ratelimit @javascript
 Feature: Getting rate limited.
   Background:
     Given the following "users" exist:

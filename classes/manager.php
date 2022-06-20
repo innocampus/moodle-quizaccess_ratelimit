@@ -24,7 +24,8 @@
 
 namespace quizaccess_ratelimit;
 
-defined('MOODLE_INTERNAL') || die();
+use dml_exception;
+use stdClass;
 
 /**
  * Manager to implement the rate limiting using the leaky bucket algorithm.
@@ -36,13 +37,14 @@ class manager {
 
     /**
      * If there isn't a counter, add one to the db table.
+     * @throws dml_exception
      */
     public static function init_counter() {
         global $DB;
 
         if (!$DB->record_exists('quizaccess_ratelimit', [])) {
             // Add a record that tracks the information needed for the algorithm.
-            $record = new \stdClass();
+            $record = new stdClass();
             $record->counter = 0;
             $record->timemodified = 0;
             $DB->insert_record('quizaccess_ratelimit', $record);
@@ -53,8 +55,9 @@ class manager {
      * Number of users that are allowed to start a quiz attempt per second. Returns infinity if there is no limit.
      *
      * @return float
+     * @throws dml_exception
      */
-    private static function get_rate() : float {
+    private static function get_rate(): float {
         $msbetweenattempts = get_config('quizaccess_ratelimit', 'ms_between_attempts');
         if ($msbetweenattempts < 1) {
             return INF;
@@ -69,23 +72,23 @@ class manager {
      * quiz attempt now using the leaky bucket algorithm.
      *
      * @return int
+     * @throws dml_exception
      */
-    public static function get_seconds_to_wait() : int {
+    public static function get_seconds_to_wait(): int {
         global $DB;
 
         $rate = self::get_rate();
 
         // Do not access the database if there is no rate limit.
-        if (is_infinite($rate))
+        if (is_infinite($rate)) {
             return 0;
+        }
 
         // Get the number of users that want to start a quiz right now.
-        $sql = 'UPDATE {quizaccess_ratelimit}
-                SET counter = GREATEST(1,
-                        counter + 1 - ((extract(epoch from now())::bigint - timemodified)::real * :rate)
-                    ),
-                    timemodified = extract(epoch from now())::bigint
-                RETURNING counter';
+        $sql = "UPDATE {quizaccess_ratelimit}
+                   SET counter = GREATEST(1, counter + 1 - ((extract(epoch from now())::bigint - timemodified)::real * :rate)),
+                       timemodified = extract(epoch from now())::bigint
+             RETURNING counter";
 
         // The function get_field_sql actually expects a SELECT query.
         // However, this query behaves like a SELECT thanks to the RETURNING part.

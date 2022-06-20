@@ -1,7 +1,7 @@
 /**
  * Quiz rate limiting JS code.
  *
- * @package quizaccess_ratelimit
+ * @module    mod_quiz/add_question_modal_launcher
  * @copyright 2021 Martin Gauk, TU Berlin <gauk@math.tu-berlin.de>
  */
 
@@ -16,7 +16,7 @@ export const init = (maxDelay) => {
     const maxDelayUntil = Date.now() + maxDelay * 1000;
     $(button).click((e) => {
         e.preventDefault();
-        $(button).prop("disabled",true);
+        $(button).prop("disabled", true);
         Ajax.call([{
             methodname: 'quizaccess_ratelimit_get_waiting_time',
             args: {},
@@ -54,9 +54,11 @@ const delaySubmit = function(seconds, message = '') {
     if (seconds > 10) {
         ModalFactory.create({
             body: message,
-        }).then(function(modal) {
-            modal.show();
-        });
+        }).then(
+            (modal) => modal.show()
+        ).catch(
+            () => null
+        );
     }
 
     const endTime = Date.now() + seconds * 1000;
@@ -69,7 +71,7 @@ const delaySubmit = function(seconds, message = '') {
         }
         clearInterval(interval);
         clearTimeout(timeout);
-        $(button).prop("disabled",false);
+        $(button).prop("disabled", false);
         $(button).val(buttonVal);
         return true;
     };

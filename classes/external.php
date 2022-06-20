@@ -24,10 +24,15 @@
 
 namespace quizaccess_ratelimit;
 
-use \external_single_structure;
-use \external_value;
-
-defined('MOODLE_INTERNAL') || die();
+use coding_exception;
+use context_system;
+use dml_exception;
+use external_api;
+use external_function_parameters;
+use external_single_structure;
+use external_value;
+use invalid_parameter_exception;
+use restricted_context_exception;
 
 /**
  * External function to implement the rate limiting.
@@ -35,30 +40,42 @@ defined('MOODLE_INTERNAL') || die();
  * @copyright  2021 Martin Gauk, TU Berlin <gauk@math.tu-berlin.de>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class external extends \external_api {
+class external extends external_api {
 
     /**
      * Parameters for the get_waiting_time external function.
+     * @return external_function_parameters
      */
-    public static function get_waiting_time_parameters() {
-        return new \external_function_parameters([]);
+    public static function get_waiting_time_parameters(): external_function_parameters {
+        return new external_function_parameters([]);
     }
 
     /**
      * Return values of the get_waiting_time external function.
+     * @return external_single_structure
      */
-    public static function get_waiting_time_returns() {
+    public static function get_waiting_time_returns(): external_single_structure {
         return new external_single_structure([
             'seconds' => new external_value(PARAM_INT, 'no. of seconds to wait'),
             'message' => new external_value(PARAM_RAW, 'message to display'),
         ]);
     }
 
-    public static function get_waiting_time() {
+    /**
+     * Checks how long the user has to wait (if at all) before being permitted to start a quiz attempt.
+     * Returns the wait time in seconds along with a message to display to the user in case he is forced to wait.
+     *
+     * @return array
+     * @throws coding_exception
+     * @throws dml_exception
+     * @throws invalid_parameter_exception
+     * @throws restricted_context_exception
+     */
+    public static function get_waiting_time(): array {
         global $SESSION;
 
         // Ensure user is logged in.
-        $context = \context_system::instance();
+        $context = context_system::instance();
         self::validate_context($context);
 
         $message = get_string('message', 'quizaccess_ratelimit');

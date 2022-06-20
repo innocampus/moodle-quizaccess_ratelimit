@@ -23,10 +23,10 @@
  */
 
 
-defined('MOODLE_INTERNAL') || die();
+namespace quizaccess_ratelimit;
 
-global $CFG;
-require_once($CFG->dirroot . '/mod/quiz/accessrule/ratelimit/rule.php');
+use advanced_testcase;
+use dml_exception;
 
 
 /**
@@ -37,27 +37,33 @@ require_once($CFG->dirroot . '/mod/quiz/accessrule/ratelimit/rule.php');
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @group      quizaccess_ratelimit
  */
-class quizaccess_ratelimit_testcase extends advanced_testcase {
+class manager_test extends advanced_testcase {
 
-    private function set_db_time($time) {
+    /**
+     * Overwrites the `now` database function to return a specified timestamp.
+     * Since `manager::get_seconds_to_wait` will be tested, and it calls the database's `now` function,
+     * this makes testing specific wait-intervals much easier.
+     *
+     * @param int $time The desired timestamp to be returned by the `now` function.
+     * @throws dml_exception
+     */
+    private function set_db_time(int $time) {
         global $DB;
-
-        $this->assertTrue(is_int($time));
-
-        $DB->execute('CREATE SCHEMA IF NOT EXISTS override');
-
-        $sql = 'CREATE OR REPLACE FUNCTION override.now()
-                  RETURNS timestamptz AS
-                $func$
-                SELECT to_timestamp('.$time.')
-                $func$ language sql STABLE';
+        $DB->execute("CREATE SCHEMA IF NOT EXISTS override");
+        $sql = "CREATE OR REPLACE FUNCTION override.now()
+                          RETURNS timestamptz AS \$func$
+                           SELECT to_timestamp($time) \$func$ language sql STABLE";
         $DB->execute($sql);
-
-        $DB->execute('SET search_path = override, pg_catalog, public');
+        $DB->execute("SET search_path = override, pg_catalog, public");
     }
 
+    /**
+     * Tests delay with extreme timout.
+     *
+     * @covers \quizaccess_ratelimit\manager::get_seconds_to_wait
+     * @throws dml_exception
+     */
     public function test_get_seconds_to_wait_extreme_timeout() {
-        global $DB;
         $this->resetAfterTest();
 
         $timeout = 10000000; // Ten thousand seconds.
@@ -66,20 +72,26 @@ class quizaccess_ratelimit_testcase extends advanced_testcase {
         $time = 1614176234;
         $this->set_db_time($time);
 
-        $this->assertEquals(0, \quizaccess_ratelimit\manager::get_seconds_to_wait());
+        $this->assertEquals(0, manager::get_seconds_to_wait());
 
         $time += 9999;
         $this->set_db_time($time);
 
-        $this->assertEquals(1, \quizaccess_ratelimit\manager::get_seconds_to_wait());
+        $this->assertEquals(1, manager::get_seconds_to_wait());
 
         $time += 10001;
         $this->set_db_time($time);
 
-        $this->assertEquals(0, \quizaccess_ratelimit\manager::get_seconds_to_wait());
+        $this->assertEquals(0, manager::get_seconds_to_wait());
 
     }
 
+    /**
+     * Tests delay with large timout.
+     *
+     * @covers \quizaccess_ratelimit\manager::get_seconds_to_wait
+     * @throws dml_exception
+     */
     public function test_get_seconds_to_wait_high_timeout() {
         global $DB;
         $this->resetAfterTest();
@@ -90,27 +102,33 @@ class quizaccess_ratelimit_testcase extends advanced_testcase {
         $time = 1614176234;
         $this->set_db_time($time);
 
-        $this->assertEquals(0, \quizaccess_ratelimit\manager::get_seconds_to_wait());
-        $this->assertEquals(10, \quizaccess_ratelimit\manager::get_seconds_to_wait());
-        $this->assertEquals(20, \quizaccess_ratelimit\manager::get_seconds_to_wait());
+        $this->assertEquals(0, manager::get_seconds_to_wait());
+        $this->assertEquals(10, manager::get_seconds_to_wait());
+        $this->assertEquals(20, manager::get_seconds_to_wait());
 
         $this->assertEquals(3, $DB->get_field('quizaccess_ratelimit', 'counter', []));
 
         $this->set_db_time(++$time);
 
-        $this->assertEquals(29, \quizaccess_ratelimit\manager::get_seconds_to_wait());
+        $this->assertEquals(29, manager::get_seconds_to_wait());
 
         $time += 38;
         $this->set_db_time($time);
 
-        $this->assertEquals(1, \quizaccess_ratelimit\manager::get_seconds_to_wait());
+        $this->assertEquals(1, manager::get_seconds_to_wait());
 
         $time += 11;
         $this->set_db_time($time);
 
-        $this->assertEquals(0, \quizaccess_ratelimit\manager::get_seconds_to_wait());
+        $this->assertEquals(0, manager::get_seconds_to_wait());
     }
 
+    /**
+     * Tests delay with low timout.
+     *
+     * @covers \quizaccess_ratelimit\manager::get_seconds_to_wait
+     * @throws dml_exception
+     */
     public function test_get_seconds_to_wait_low_timeout() {
         global $DB;
         $this->resetAfterTest();
@@ -121,26 +139,32 @@ class quizaccess_ratelimit_testcase extends advanced_testcase {
         $time = 1614176234;
         $this->set_db_time($time);
 
-        $this->assertEquals(0, \quizaccess_ratelimit\manager::get_seconds_to_wait());
-        $this->assertEquals(0, \quizaccess_ratelimit\manager::get_seconds_to_wait());
-        $this->assertEquals(1, \quizaccess_ratelimit\manager::get_seconds_to_wait());
-        $this->assertEquals(1, \quizaccess_ratelimit\manager::get_seconds_to_wait());
+        $this->assertEquals(0, manager::get_seconds_to_wait());
+        $this->assertEquals(0, manager::get_seconds_to_wait());
+        $this->assertEquals(1, manager::get_seconds_to_wait());
+        $this->assertEquals(1, manager::get_seconds_to_wait());
 
         $this->assertEquals(4, $DB->get_field('quizaccess_ratelimit', 'counter', []));
 
         $this->set_db_time(++$time);
 
-        $this->assertEquals(1, \quizaccess_ratelimit\manager::get_seconds_to_wait());
+        $this->assertEquals(1, manager::get_seconds_to_wait());
 
         $this->assertEquals(3, $DB->get_field('quizaccess_ratelimit', 'counter', []));
 
         $this->set_db_time(++$time);
 
-        $this->assertEquals(0, \quizaccess_ratelimit\manager::get_seconds_to_wait());
+        $this->assertEquals(0, manager::get_seconds_to_wait());
 
         $this->assertEquals(2, $DB->get_field('quizaccess_ratelimit', 'counter', []));
     }
 
+    /**
+     * Tests delay with no timout.
+     *
+     * @covers \quizaccess_ratelimit\manager::get_seconds_to_wait
+     * @throws dml_exception
+     */
     public function test_get_seconds_to_wait_no_timeout() {
         global $DB;
         $this->resetAfterTest();
@@ -148,7 +172,7 @@ class quizaccess_ratelimit_testcase extends advanced_testcase {
         $timeout = 0; // No timeout.
         set_config('ms_between_attempts', $timeout, 'quizaccess_ratelimit');
 
-        $this->assertEquals(0, \quizaccess_ratelimit\manager::get_seconds_to_wait());
+        $this->assertEquals(0, manager::get_seconds_to_wait());
 
         $this->assertEquals(0, $DB->get_field('quizaccess_ratelimit', 'counter', []));
     }

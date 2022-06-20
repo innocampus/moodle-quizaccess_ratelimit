@@ -28,7 +28,7 @@ specifies how many users per second are allowed to start a new quiz attempt.
 
 Users will have to wait, when too many users want to start an attempt at the same time.
 The maximum waiting time is determined by the closing time and the time limit of the quiz
-(in order to guarantee that no user is disadvantaged as a consequence of a delay by the plugin).
+(in order to guarantee that no user is disadvantaged as a consequence of a delay by the plugin), but it is always capped at 15 minutes.
 This means there can be still situations when too many users are starting an attempt.
 
 The rate limiting affects only quizzes that have a preflight check form (e.g. when a time limit or a password was defined).
