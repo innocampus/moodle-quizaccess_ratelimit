@@ -8,6 +8,7 @@
 import $ from 'jquery';
 import Ajax from 'core/ajax';
 import ModalFactory from 'core/modal_factory';
+import {markFormSubmitted} from 'core_form/changechecker';
 
 const form = '#mod_quiz_preflight_form';
 const button = form + ' input#id_submitbutton';
@@ -41,12 +42,8 @@ export const init = (maxDelay) => {
 };
 
 const delaySubmit = function(seconds, message = '') {
-    Y.use('moodle-core-formchangechecker', function() {
-        M.core_formchangechecker.set_form_submitted();
-    });
-
     if (seconds === 0) {
-        $(form).submit();
+        submitForm();
         return;
     }
 
@@ -90,7 +87,13 @@ const delaySubmit = function(seconds, message = '') {
     const timeout = setTimeout(() => {
         clearInterval(interval);
         if (!checkSubmitCancelled()) {
-            $(form).submit();
+            submitForm();
         }
     }, seconds * 1000);
+};
+
+const submitForm = function() {
+    const formEl = document.querySelector(form);
+    markFormSubmitted(formEl);
+    formEl.submit();
 };
