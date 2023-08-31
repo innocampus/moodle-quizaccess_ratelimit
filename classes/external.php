@@ -24,6 +24,12 @@
 
 namespace quizaccess_ratelimit;
 
+defined('MOODLE_INTERNAL') || die();
+
+// Workaround to support Moodle 4.1 as well as 4.2 and higher.
+// For reference see `https://moodledev.io/docs/4.2/devupdate#external-api`.
+require_once($CFG->dirroot . '/lib/externallib.php');
+
 use coding_exception;
 use context_system;
 use dml_exception;

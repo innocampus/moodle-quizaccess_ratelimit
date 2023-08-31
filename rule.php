@@ -24,7 +24,20 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-require_once($CFG->dirroot . '/mod/quiz/accessrule/accessrulebase.php');
+// Workaround to support Moodle 4.1 as well as 4.2 and higher.
+// For reference see `mod/quiz/accessrule/upgrade.txt`.
+if (class_exists('\mod_quiz\local\access_rule_base')) {
+    // These aliases ensure Moodle >=4.2 compatibility.
+    class_alias('\mod_quiz\local\access_rule_base', '\access_rule_base_alias');
+    class_alias('\mod_quiz\form\preflight_check_form', '\preflight_check_form_alias');
+    class_alias('\mod_quiz\quiz_settings', '\quiz_settings_alias');
+} else {
+    // These aliases ensure Moodle <=4.1 compatibility.
+    require_once($CFG->dirroot . '/mod/quiz/accessrule/accessrulebase.php');
+    class_alias('\quiz_access_rule_base', '\access_rule_base_alias');
+    class_alias('\mod_quiz_preflight_check_form', '\preflight_check_form_alias');
+    class_alias('\quiz', '\quiz_settings_alias');
+}
 
 /**
  * Implementation of the quizaccess_ratelimit plugin.
@@ -32,7 +45,7 @@ require_once($CFG->dirroot . '/mod/quiz/accessrule/accessrulebase.php');
  * @copyright  2021 Martin Gauk, TU Berlin <gauk@math.tu-berlin.de>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class quizaccess_ratelimit extends quiz_access_rule_base {
+class quizaccess_ratelimit extends access_rule_base_alias {
 
     /**
      * This is the maximum possible delay (created by this plugin) before a quiz attempt can be started.
@@ -42,13 +55,18 @@ class quizaccess_ratelimit extends quiz_access_rule_base {
     /**
      * Return an appropriately configured instance of this rule, if it is applicable
      * to the given quiz, otherwise return null.
-     * @param quiz $quizobj information about the quiz in question.
+     *
+     * @param quiz_settings_alias $quizobj information about the quiz in question.
      * @param int $timenow the time that should be considered as 'now'.
      * @param bool $canignoretimelimits whether the current user is exempt from
      *      time limits by the mod/quiz:ignoretimelimits capability.
-     * @return quiz_access_rule_base|null the rule, if applicable, else null.
+     * @return self|null the rule, if applicable, else null.
      */
-    public static function make(quiz $quizobj, $timenow, $canignoretimelimits): ?self {
+    public static function make(
+        quiz_settings_alias $quizobj,
+        $timenow,
+        $canignoretimelimits,
+    ): self|null {
         return new self($quizobj, $timenow);
     }
 
