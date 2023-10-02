@@ -30,6 +30,6 @@ $capabilities = [
         'contextlevel' => CONTEXT_MODULE,
         'archetypes' => [
             'manager' => CAP_ALLOW,
-        ]
+        ],
     ],
 ];
