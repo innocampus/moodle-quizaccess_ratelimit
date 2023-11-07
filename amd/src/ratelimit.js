@@ -9,6 +9,7 @@ import $ from 'jquery';
 import Ajax from 'core/ajax';
 import ModalFactory from 'core/modal_factory';
 import {markFormSubmitted} from 'core_form/changechecker';
+import Notification from 'core/notification';
 
 const form = '#mod_quiz_preflight_form';
 const button = form + ' input#id_submitbutton';
@@ -61,7 +62,9 @@ const delaySubmit = function(seconds, popupRequired, message = '') {
                 var popupWindow = window.open(formElement.action + '?' + serializedForm, 'quizpopup',
                     'width=' + screen.width + ', height=' + screen.height);
                 if (!popupWindow || popupWindow.outerHeight === 0) {
-                    alert('Pop-up wurde blockiert. Bitte erlauben Sie Pop-ups für diese Seite.');
+                    var title = 'Pop-up wurde blockiert';
+                    var message = 'Bitte erlauben Sie Pop-ups für diese Seite.';
+                    Notification.alert(title, message);
                 }
                 return;
             }
