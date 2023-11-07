@@ -51,7 +51,7 @@ export const init = (maxDelay, popupRequired) => {
 };
 
 const delaySubmit = function(seconds, popupRequired, message = '') {
-    if (seconds === 0 ) {
+    if (seconds === 0) {
         if (popupRequired) {
             // Open the quiz in a popup window and do not submitForm()
             const formElement = document.querySelector('#mod_quiz_preflight_form');
@@ -60,7 +60,7 @@ const delaySubmit = function(seconds, popupRequired, message = '') {
                 var serializedForm = new URLSearchParams(formData).toString().replace(/\bcancel=/, 'x=');
                 var popupWindow = window.open(formElement.action + '?' + serializedForm, 'quizpopup',
                     'width=' + screen.width + ', height=' + screen.height);
-                if(!popupWindow || popupWindow.outerHeight === 0) {
+                if (!popupWindow || popupWindow.outerHeight === 0) {
                     alert('Pop-up wurde blockiert. Bitte erlauben Sie Pop-ups für diese Seite.');
                 }
                 return;
