@@ -63,8 +63,8 @@ const delaySubmit = function(seconds, popupRequired, message = '') {
                     'width=' + screen.width + ', height=' + screen.height);
                 if (!popupWindow || popupWindow.outerHeight === 0) {
                     var title = 'Pop-up wurde blockiert';
-                    var message = 'Bitte erlauben Sie Pop-ups für diese Seite.';
-                    Notification.alert(title, message);
+                    var notifMessage = 'Bitte erlauben Sie Pop-ups für diese Seite.';
+                    Notification.alert(title, notifMessage);
                 }
                 return;
             }
