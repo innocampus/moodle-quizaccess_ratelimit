@@ -13,51 +13,54 @@ import {markFormSubmitted} from 'core_form/changechecker';
 const form = '#mod_quiz_preflight_form';
 const button = form + ' input#id_submitbutton';
 
-export const init = (maxDelay, popupRequired) => {
+export const init = (maxDelay) => {
     const maxDelayUntil = Date.now() + maxDelay * 1000;
+    // Eventhandling
+    const handleClick = (e) => {
+        if (e.target.id !== 'id_submitbutton') {
+            return;
+        }
+        e.preventDefault();
+        e.stopPropagation();
+
+        // Remove the event
+        e.currentTarget.removeEventListener('click', handleClick, true);
+
+        Ajax.call([{
+            methodname: 'quizaccess_ratelimit_get_waiting_time',
+            args: {},
+            done: (response) => {
+                maxDelay = Math.floor((maxDelayUntil - Date.now()) / 1000);
+                maxDelay = Math.max(0, maxDelay);
+                if (response.seconds >= maxDelay) {
+                    // Spread the delay between 0 and maxdelay evenly.
+                    const rand = Math.floor(Math.random() * maxDelay);
+                    delaySubmit(rand, response.message);
+                } else {
+                    delaySubmit(response.seconds, response.message);
+                }
+            },
+            fail: () => {
+                // Do a random short delay.
+                const rand = Math.floor(Math.random() * 10);
+                delaySubmit(rand);
+            }
+        }]);
+    };
 
     // Register click listener to root element '#mod_quiz_preflight_form' in capture phase to prevent propagation
     // to the button-click listener in mod/quiz/amd/src/preflight.js:66 and therefore stop this event from firing.
-    const formElement = document.querySelector(form);
+    const formElement = document.querySelector('#mod_quiz_preflight_form');
     if (formElement) {
-        formElement.addEventListener('click', (e) => {
-            if (e.target.id !== 'id_submitbutton') {
-                return;
-            }
-            if (!e.customTrigger) {
-                e.preventDefault();
-                e.stopPropagation();
-                Ajax.call([{
-                    methodname: 'quizaccess_ratelimit_get_waiting_time',
-                    args: {},
-                    done: (response) => {
-                        maxDelay = Math.floor((maxDelayUntil - Date.now()) / 1000);
-                        maxDelay = Math.max(0, maxDelay);
-                        if (response.seconds >= maxDelay) {
-                            // Spread the delay between 0 and maxdelay evenly.
-                            const rand = Math.floor(Math.random() * maxDelay);
-                            delaySubmit(rand, popupRequired, response.message);
-                        } else {
-                            delaySubmit(response.seconds, popupRequired, response.message);
-                        }
-                    },
-                    fail: () => {
-                        // Do a random short delay.
-                        const rand = Math.floor(Math.random() * 10);
-                        delaySubmit(rand, popupRequired);
-                    }
-                }]);
-            }
-        }, true);
+        formElement.addEventListener('click', handleClick, true);
     }
 };
 
-const delaySubmit = function(seconds, popupRequired, message = '') {
+const delaySubmit = function(seconds, message = '') {
     const buttonEl = document.querySelector(button);
     buttonEl.disabled = true;
-
     if (seconds === 0) {
-        submitForm(popupRequired);
+        submitForm();
         return;
     }
 
@@ -101,21 +104,14 @@ const delaySubmit = function(seconds, popupRequired, message = '') {
     const timeout = setTimeout(() => {
         clearInterval(interval);
         if (!checkSubmitCancelled()) {
-            submitForm(popupRequired);
+            submitForm();
         }
     }, seconds * 1000);
 };
 
-const submitForm = function(popupRequired) {
+const submitForm = function() {
     const formEl = document.querySelector(form);
-    if (popupRequired) {
-        const buttonEl = document.querySelector(button);
-        const clickEvent = new Event('click', {bubbles: true, cancelable: true});
-        clickEvent.customTrigger = true;
-        buttonEl.dispatchEvent(clickEvent);
-        markFormSubmitted(formEl);
-    } else {
-        markFormSubmitted(formEl);
-        formEl.submit();
-    }
+    markFormSubmitted(formEl);
+    $(button).prop("disabled", false);
+    $(button).click();
 };

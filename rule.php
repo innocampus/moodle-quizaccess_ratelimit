@@ -89,14 +89,7 @@ class quizaccess_ratelimit extends access_rule_base_alias {
         } else {
             $maxdelay = self::MAX_DELAY;
         }
-
-        // Check if the "securewindow" setting is set. This setting triggers the quiz in a popup window.
-        $popuprequired = false;
-        if ($this->quiz->browsersecurity == "securewindow") {
-            $popuprequired = true;
-        }
-
-        $PAGE->requires->js_call_amd('quizaccess_ratelimit/ratelimit', 'init', [$maxdelay, $popuprequired]);
+        $PAGE->requires->js_call_amd('quizaccess_ratelimit/ratelimit', 'init', [$maxdelay]);
 
         return '';
     }
