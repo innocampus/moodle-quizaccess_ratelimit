@@ -1,4 +1,4 @@
-@mod @quizaccess @quizaccess_ratelimit @quizaccess_ratelimit_secure_window @javascript
+@mod @quizaccess @quizaccess_ratelimit_secure_window @javascript
 Feature: Getting rate limited with secure window.
   Background:
     Given the following "users" exist:
@@ -13,7 +13,7 @@ Feature: Getting rate limited with secure window.
       | student1 | C1     | student |
       | student2 | C1     | student |
     And the following config values are set as admin:
-      | ms_between_attempts | 20000 | quizaccess_ratelimit |
+      | ms_between_attempts | 22000 | quizaccess_ratelimit |
       # 20 seconds between quiz attempts are just for testing purposes of course.
     And the following "question categories" exist:
       | contextlevel | reference | name           |
@@ -123,7 +123,7 @@ Feature: Getting rate limited with secure window.
     Then I should see "To attempt this quiz you need to know the quiz password" in the "Start attempt" "dialogue"
     And I set the field "Quiz password" to "abcde"
     And I press "Start attempt"
-    And I wait "2" seconds
+    And I wait "1" seconds
     And I switch to a second window
     And I wait until the page is ready
     And I should see "Answer the first question"
