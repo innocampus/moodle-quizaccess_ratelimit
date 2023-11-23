@@ -22,6 +22,8 @@ export const init = (maxDelay) => {
         }
         e.preventDefault();
         e.stopPropagation();
+        const buttonEl = document.querySelector(button);
+        buttonEl.disabled = true;
 
         Ajax.call([{
             methodname: 'quizaccess_ratelimit_get_waiting_time',
@@ -57,7 +59,6 @@ export const init = (maxDelay) => {
 
 const delaySubmit = function(seconds, message = '') {
     const buttonEl = document.querySelector(button);
-    buttonEl.disabled = true;
     if (seconds === 0) {
         submitForm();
         return;
@@ -111,10 +112,10 @@ const delaySubmit = function(seconds, message = '') {
 const submitForm = function() {
     const formElement = document.querySelector(form);
     // Remove eventlistener from the init function
-    if (formElement && formElement._handleClick) {
+    if (formElement._handleClick) {
         formElement.removeEventListener('click', formElement._handleClick, true);
-        markFormSubmitted(formElement);
     }
+    markFormSubmitted(formElement);
     const buttonEl = document.querySelector(button);
     buttonEl.disabled = false;
     buttonEl.click();
