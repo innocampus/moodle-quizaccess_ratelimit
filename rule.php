@@ -89,6 +89,7 @@ class quizaccess_ratelimit extends access_rule_base_alias {
         } else {
             $maxdelay = self::MAX_DELAY;
         }
+
         $PAGE->requires->js_call_amd('quizaccess_ratelimit/ratelimit', 'init', [$maxdelay]);
 
         return '';
