@@ -59,7 +59,6 @@ Feature: Getting rate limited with secure window.
     Then I should see "Answer the first question"
     And I log out
 
-
   Scenario: Secure window cancel.
     Given the following "activity" exists:
       | activity                     | quiz           |
@@ -101,7 +100,6 @@ Feature: Getting rate limited with secure window.
     And I switch to a second window
     Then I should see "Answer the first question"
     And I log out
-
 
   Scenario: Secure window and password enabled.
     Given the following "activity" exists:
