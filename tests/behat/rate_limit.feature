@@ -58,6 +58,7 @@ Feature: Getting rate limited in different scenarios.
     And I switch to a second window
     Then I should see "Answer the first question"
     And I log out
+    And I reset the quiz rate limit counters
 
   Scenario: Secure window cancel.
     Given the following "activity" exists:
@@ -100,6 +101,7 @@ Feature: Getting rate limited in different scenarios.
     And I switch to a second window
     Then I should see "Answer the first question"
     And I log out
+    And I reset the quiz rate limit counters
 
   Scenario: Secure window and password enabled.
     Given the following "activity" exists:
@@ -141,6 +143,7 @@ Feature: Getting rate limited in different scenarios.
     And I switch to a second window
     Then I should see "Answer the first question"
     And I log out
+    And I reset the quiz rate limit counters
 
   Scenario: Enforce wait time.
     Given the following "activity" exists:
@@ -161,13 +164,14 @@ Feature: Getting rate limited in different scenarios.
     And I press "Start attempt"
     And I should not see "The server is processing many requests at the moment."
     And I log out
-    And I wait "2" seconds
-
     And I log in as "student2"
     And I am on "Course 1" course homepage
     And I follow "Test quiz name"
     And I wait until the page is ready
     And I press "Attempt quiz"
     And I press "Start attempt"
-    Then I should see "The server is processing many requests at the moment. Please wait until your quiz starts in a few seconds."
+    And I should see "The server is processing many requests at the moment. Please wait until your quiz starts in a few seconds."
+    And I wait "20" seconds
+    Then I should see "Answer the first question"
     And I log out
+    And I reset the quiz rate limit counters
