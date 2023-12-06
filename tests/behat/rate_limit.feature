@@ -13,7 +13,7 @@ Feature: Getting rate limited in different scenarios.
       | student1 | C1     | student |
       | student2 | C1     | student |
     And the following config values are set as admin:
-      | ms_between_attempts | 22000 | quizaccess_ratelimit |
+      | ms_between_attempts | 25000 | quizaccess_ratelimit |
       # 20 seconds between quiz attempts are just for testing purposes of course.
     And the following "question categories" exist:
       | contextlevel | reference | name           |
@@ -54,7 +54,7 @@ Feature: Getting rate limited in different scenarios.
     And I press "Attempt quiz"
     And I press "Start attempt"
     And I should see "The server is processing many requests at the moment."
-    And I wait "20" seconds
+    And I wait "25" seconds
     And I switch to a second window
     Then I should see "Answer the first question"
     And I log out
@@ -97,7 +97,7 @@ Feature: Getting rate limited in different scenarios.
     And I press "Attempt quiz"
     And I wait "5" seconds
     And I press "Start attempt"
-    And I wait "15" seconds
+    And I wait "25" seconds
     And I switch to a second window
     Then I should see "Answer the first question"
     And I log out
@@ -139,7 +139,7 @@ Feature: Getting rate limited in different scenarios.
     And I set the field "Quiz password" to "abcde"
     And I press "Start attempt"
     And I should see "The server is processing many requests at the moment."
-    And I wait "20" seconds
+    And I wait "25" seconds
     And I switch to a second window
     Then I should see "Answer the first question"
     And I log out
@@ -171,7 +171,7 @@ Feature: Getting rate limited in different scenarios.
     And I press "Attempt quiz"
     And I press "Start attempt"
     And I should see "The server is processing many requests at the moment. Please wait until your quiz starts in a few seconds."
-    And I wait "20" seconds
+    And I wait "25" seconds
     Then I should see "Answer the first question"
     And I log out
     And I reset the quiz rate limit counters

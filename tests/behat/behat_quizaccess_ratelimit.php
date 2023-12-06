@@ -24,6 +24,15 @@
 
 require_once(__DIR__ . '/../../../../../../lib/behat/behat_base.php');
 
+
+/**
+ * Steps definitions related with accessrule ratelimit
+ *
+ * @package    quizaccess_ratelimit
+ * @category   test
+ * @copyright  2023 Felix Di Lenarda, TU Berlin
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
 class behat_quizaccess_ratelimit extends behat_base {
 
     /**
@@ -34,7 +43,7 @@ class behat_quizaccess_ratelimit extends behat_base {
     public function i_reset_the_quiz_rate_limit_counters() {
         global $DB;
 
-        // SQL to reset counter and timemodified fields
+        // SQL to reset counter and timemodified fields.
         $sql = "UPDATE {quizaccess_ratelimit} SET counter = 0, timemodified = 0";
         $DB->execute($sql);
     }
