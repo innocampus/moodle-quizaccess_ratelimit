@@ -47,4 +47,22 @@ class behat_quizaccess_ratelimit extends behat_base {
         $sql = "UPDATE {quizaccess_ratelimit} SET counter = 0, timemodified = 0";
         $DB->execute($sql);
     }
+
+    /**
+     * Checks the popupwindow differently for moodle 401 and 402/403:
+     *    401: "Answer the first question"
+     *    402/403: "Test quiz name"
+     *
+     * @Given /^I check the quiz popup window depending on Moodle version$/
+     */
+    public function i_check_the_quiz_popup_window_depending_on_moodle_version() {
+        global $CFG;
+        $branch = $CFG->branch;
+
+        if ($branch === "401") {  // If moodle 401 check "I should see "Answer the first question".
+            $this->assertSession()->pageTextContains("Answer the first question");
+        } else {  // If moodle 402 or 403 check "I should see "Start attempt".
+            $this->assertSession()->pageTextContains("Test quiz name");
+        }
+    }
 }

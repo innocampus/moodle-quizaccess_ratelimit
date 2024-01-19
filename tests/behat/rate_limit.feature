@@ -21,6 +21,7 @@ Feature: Getting rate limited in different scenarios.
     And the following "questions" exist:
       | questioncategory | qtype     | name           | questiontext              |
       | Test questions   | truefalse | First question | Answer the first question |
+    And I reset the quiz rate limit counters
 
   Scenario: Secure window enabled.
     Given the following "activity" exists:
@@ -43,7 +44,7 @@ Feature: Getting rate limited in different scenarios.
     And I wait "1" seconds
     And I switch to a second window
     And I wait until the page is ready
-    And I should see "Answer the first question"
+    And I check the quiz popup window depending on Moodle version
     And I switch to a second window
     And I close all opened windows
     And I log out
@@ -56,9 +57,8 @@ Feature: Getting rate limited in different scenarios.
     And I should see "The server is processing many requests at the moment."
     And I wait "25" seconds
     And I switch to a second window
-    Then I should see "Answer the first question"
+    Then I check the quiz popup window depending on Moodle version
     And I log out
-    And I reset the quiz rate limit counters
 
   Scenario: Secure window cancel.
     Given the following "activity" exists:
@@ -80,7 +80,7 @@ Feature: Getting rate limited in different scenarios.
     And I wait "1" seconds
     And I switch to a second window
     And I wait until the page is ready
-    And I should see "Answer the first question"
+    And I check the quiz popup window depending on Moodle version
     And I switch to a second window
     And I close all opened windows
     And I log out
@@ -99,9 +99,8 @@ Feature: Getting rate limited in different scenarios.
     And I press "Start attempt"
     And I wait "25" seconds
     And I switch to a second window
-    Then I should see "Answer the first question"
+    Then I check the quiz popup window depending on Moodle version
     And I log out
-    And I reset the quiz rate limit counters
 
   Scenario: Secure window and password enabled.
     Given the following "activity" exists:
@@ -126,7 +125,7 @@ Feature: Getting rate limited in different scenarios.
     And I wait "1" seconds
     And I switch to a second window
     And I wait until the page is ready
-    And I should see "Answer the first question"
+    And I check the quiz popup window depending on Moodle version
     And I switch to a second window
     And I close all opened windows
     And I log out
@@ -141,9 +140,8 @@ Feature: Getting rate limited in different scenarios.
     And I should see "The server is processing many requests at the moment."
     And I wait "25" seconds
     And I switch to a second window
-    Then I should see "Answer the first question"
+    Then I check the quiz popup window depending on Moodle version
     And I log out
-    And I reset the quiz rate limit counters
 
   Scenario: Enforce wait time.
     Given the following "activity" exists:
@@ -172,6 +170,5 @@ Feature: Getting rate limited in different scenarios.
     And I press "Start attempt"
     And I should see "The server is processing many requests at the moment. Please wait until your quiz starts in a few seconds."
     And I wait "25" seconds
-    Then I should see "Answer the first question"
+    Then I check the quiz popup window depending on Moodle version
     And I log out
-    And I reset the quiz rate limit counters
