@@ -15,9 +15,16 @@ const button = form + ' input#id_submitbutton';
 
 export const init = (maxDelay) => {
     const maxDelayUntil = Date.now() + maxDelay * 1000;
-    $(button).click((e) => {
+    // Eventhandling
+    const handleClick = (e) => {
+        if (e.target.id !== 'id_submitbutton') {
+            return;
+        }
         e.preventDefault();
-        $(button).prop("disabled", true);
+        e.stopPropagation();
+        const buttonEl = document.querySelector(button);
+        buttonEl.disabled = true;
+
         Ajax.call([{
             methodname: 'quizaccess_ratelimit_get_waiting_time',
             args: {},
@@ -38,10 +45,20 @@ export const init = (maxDelay) => {
                 delaySubmit(rand);
             }
         }]);
-    });
+    };
+
+    // Register click listener to root element '#mod_quiz_preflight_form' in capture phase to prevent propagation
+    // to the button-click listener in mod/quiz/amd/src/preflight.js:66 and therefore stop this event from firing.
+    const formElement = document.querySelector(form);
+    if (formElement) {
+        formElement.addEventListener('click', handleClick, true);
+    }
+    // Save eventlistener reference for later removal in submitForm()
+    formElement._handleClick = handleClick;
 };
 
 const delaySubmit = function(seconds, message = '') {
+    const buttonEl = document.querySelector(button);
     if (seconds === 0) {
         submitForm();
         return;
@@ -59,7 +76,7 @@ const delaySubmit = function(seconds, message = '') {
     }
 
     const endTime = Date.now() + seconds * 1000;
-    const buttonVal = $(button).val();
+    const buttonVal = buttonEl.value;
 
     const checkSubmitCancelled = () => {
         // Submit is cancelled when the form is not visible, i.e. the modal was closed.
@@ -68,8 +85,8 @@ const delaySubmit = function(seconds, message = '') {
         }
         clearInterval(interval);
         clearTimeout(timeout);
-        $(button).prop("disabled", false);
-        $(button).val(buttonVal);
+        buttonEl.disabled = false;
+        buttonEl.value = buttonVal;
         return true;
     };
 
@@ -77,7 +94,7 @@ const delaySubmit = function(seconds, message = '') {
         const secsLeft = Math.round((endTime - Date.now()) / 1000);
         const formatted = Math.floor(secsLeft / 60).toString() + ':' +
             (secsLeft % 60).toString().padStart(2, '0');
-        $(button).val(buttonVal + ' (' + formatted + ')');
+        buttonEl.value = buttonVal + ' (' + formatted + ')';
         checkSubmitCancelled();
     };
 
@@ -93,7 +110,13 @@ const delaySubmit = function(seconds, message = '') {
 };
 
 const submitForm = function() {
-    const formEl = document.querySelector(form);
-    markFormSubmitted(formEl);
-    formEl.submit();
+    const formElement = document.querySelector(form);
+    // Remove eventlistener from the init function
+    if (formElement._handleClick) {
+        formElement.removeEventListener('click', formElement._handleClick, true);
+    }
+    markFormSubmitted(formElement);
+    const buttonEl = document.querySelector(button);
+    buttonEl.disabled = false;
+    buttonEl.click();
 };
