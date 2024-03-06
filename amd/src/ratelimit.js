@@ -50,11 +50,14 @@ export const init = (maxDelay) => {
     // Register click listener to root element '#mod_quiz_preflight_form' in capture phase to prevent propagation
     // to the button-click listener in mod/quiz/amd/src/preflight.js:66 and therefore stop this event from firing.
     const formElement = document.querySelector(form);
-    if (formElement) {
+
+    // The secure mode popup will show the form again. So only add event at one location.
+    if (formElement && document.querySelector('.quizstartbuttondiv.quizsecuremoderequired') === null) {
         formElement.addEventListener('click', handleClick, true);
+
+        // Save eventlistener reference for later removal in submitForm()
+        formElement._ratelimitHandleClick = handleClick;
     }
-    // Save eventlistener reference for later removal in submitForm()
-    formElement._handleClick = handleClick;
 };
 
 const delaySubmit = function(seconds, message = '') {
@@ -112,8 +115,8 @@ const delaySubmit = function(seconds, message = '') {
 const submitForm = function() {
     const formElement = document.querySelector(form);
     // Remove eventlistener from the init function
-    if (formElement._handleClick) {
-        formElement.removeEventListener('click', formElement._handleClick, true);
+    if (formElement._ratelimitHandleClick) {
+        formElement.removeEventListener('click', formElement._ratelimitHandleClick, true);
     }
     markFormSubmitted(formElement);
     const buttonEl = document.querySelector(button);
