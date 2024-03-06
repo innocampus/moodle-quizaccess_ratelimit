@@ -12,8 +12,13 @@ import {markFormSubmitted} from 'core_form/changechecker';
 
 const form = '#mod_quiz_preflight_form';
 const button = form + ' input#id_submitbutton';
+let initialized = false;
 
 export const init = (maxDelay) => {
+    if (initialized) {
+        return;
+    }
+
     const maxDelayUntil = Date.now() + maxDelay * 1000;
     // Eventhandling
     const handleClick = (e) => {
@@ -58,6 +63,7 @@ export const init = (maxDelay) => {
         // Save eventlistener reference for later removal in submitForm()
         formElement._ratelimitHandleClick = handleClick;
     }
+    initialized = true;
 };
 
 const delaySubmit = function(seconds, message = '') {

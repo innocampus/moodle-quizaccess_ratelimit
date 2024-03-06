@@ -64,33 +64,26 @@ class quizaccess_ratelimit extends \mod_quiz\local\access_rule_base {
      *      their attempt.
      */
     public function is_preflight_check_required($attemptid) {
-        // Call add_preflight_check_form_fields if the attempt is not already started.
-        return $attemptid === null;
-    }
-
-    /**
-     * Add any field you want to pre-flight check form. You should only do
-     * something here if {@see is_preflight_check_required()} returned true.
-     *
-     * @param preflight_check_form $quizform the form being built.
-     * @param MoodleQuickForm $mform The wrapped MoodleQuickForm.
-     * @param int|null $attemptid the id of the current attempt, if there is one,
-     *      otherwise null.
-     */
-    public function add_preflight_check_form_fields(preflight_check_form $quizform, MoodleQuickForm $mform, $attemptid) {
         global $PAGE;
 
-        if ($this->quizobj->has_capability('quizaccess/ratelimit:exempt')) {
-            $maxdelay = 0;
-        } else if ($this->quiz->timeclose && $this->quiz->timelimit) {
-            // The user should have enough time to take the quiz including a short safety margin.
-            $maxdelay = max(0, $this->quiz->timeclose - $this->quiz->timelimit - $this->timenow - 2);
-            $maxdelay = min(self::MAX_DELAY, $maxdelay);
-        } else {
-            $maxdelay = self::MAX_DELAY;
-        }
+        if (isset($PAGE)) {
+            // It is a bit hacky to insert the amd call at this point, but there is no better place. We have used the description
+            // method before, but it is not called at all places where the preflight form is displayed.
+            // When there is a $PAGE object, $PAGE->requires should also exist as it is dynamically created when accessed.
 
-        $PAGE->requires->js_call_amd('quizaccess_ratelimit/ratelimit', 'init', [$maxdelay]);
+            if ($this->quizobj->has_capability('quizaccess/ratelimit:exempt')) {
+                $maxdelay = 0;
+            } else if ($this->quiz->timeclose && $this->quiz->timelimit) {
+                // The user should have enough time to take the quiz including a short safety margin.
+                $maxdelay = max(0, $this->quiz->timeclose - $this->quiz->timelimit - $this->timenow - 2);
+                $maxdelay = min(self::MAX_DELAY, $maxdelay);
+            } else {
+                $maxdelay = self::MAX_DELAY;
+            }
+
+            $PAGE->requires->js_call_amd('quizaccess_ratelimit/ratelimit', 'init', [$maxdelay]);
+        }
+        return false;
     }
 
     /**
