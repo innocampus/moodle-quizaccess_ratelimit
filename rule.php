@@ -22,7 +22,7 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-defined('MOODLE_INTERNAL') || die();
+use mod_quiz\form\preflight_check_form;
 
 /**
  * Implementation of the quizaccess_ratelimit plugin.
@@ -56,13 +56,28 @@ class quizaccess_ratelimit extends \mod_quiz\local\access_rule_base {
     }
 
     /**
-     * Information, such as might be shown on the quiz view page, relating to this restriction.
-     * There is no obligation to return anything. If it is not appropriate to tell students
-     * about this rule, then just return ''.
-     * @return mixed a message, or array of messages, explaining the restriction
-     *         (may be '' if no message is appropriate).
+     * Does this rule require a UI check with the user before an attempt is started?
+     *
+     * @param int|null $attemptid the id of the current attempt, if there is one,
+     *      otherwise null.
+     * @return bool whether a check is required before the user starts/continues
+     *      their attempt.
      */
-    public function description(): string {
+    public function is_preflight_check_required($attemptid) {
+        // Call add_preflight_check_form_fields if the attempt is not already started.
+        return $attemptid === null;
+    }
+
+    /**
+     * Add any field you want to pre-flight check form. You should only do
+     * something here if {@see is_preflight_check_required()} returned true.
+     *
+     * @param preflight_check_form $quizform the form being built.
+     * @param MoodleQuickForm $mform The wrapped MoodleQuickForm.
+     * @param int|null $attemptid the id of the current attempt, if there is one,
+     *      otherwise null.
+     */
+    public function add_preflight_check_form_fields(preflight_check_form $quizform, MoodleQuickForm $mform, $attemptid) {
         global $PAGE;
 
         if ($this->quizobj->has_capability('quizaccess/ratelimit:exempt')) {
@@ -76,8 +91,6 @@ class quizaccess_ratelimit extends \mod_quiz\local\access_rule_base {
         }
 
         $PAGE->requires->js_call_amd('quizaccess_ratelimit/ratelimit', 'init', [$maxdelay]);
-
-        return '';
     }
 
     /**
