@@ -24,21 +24,15 @@
 
 namespace quizaccess_ratelimit;
 
-defined('MOODLE_INTERNAL') || die();
-
-// Workaround to support Moodle 4.1 as well as 4.2 and higher.
-// For reference see `https://moodledev.io/docs/4.2/devupdate#external-api`.
-require_once($CFG->dirroot . '/lib/externallib.php');
-
-use coding_exception;
 use context_system;
+use core\exception\coding_exception;
+use core\exception\invalid_parameter_exception;
+use core_external\external_api;
+use core_external\external_function_parameters;
+use core_external\external_single_structure;
+use core_external\external_value;
+use core_external\restricted_context_exception;
 use dml_exception;
-use external_api;
-use external_function_parameters;
-use external_single_structure;
-use external_value;
-use invalid_parameter_exception;
-use restricted_context_exception;
 
 /**
  * External function to implement the rate limiting.

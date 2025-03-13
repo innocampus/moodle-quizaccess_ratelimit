@@ -111,7 +111,7 @@ Feature: Quiz getting rate limited
     Then I press "Start attempt"
     And I should not see "Answer the first question"
     And I should see "The server is processing many requests at the moment. Please wait until your quiz starts in a few seconds."
-    And I click on ".close" "css" in the ".modal-content" "css_element"
+    And I click on ".btn-close" "css" in the ".modal-content" "css_element"
     # TODO: The next 3 steps are a workaround because just using `And I press "Cancel"` causes an error in chromium -> `no such window: target window already closed`
     And I switch to the main window
     And I close all opened windows
