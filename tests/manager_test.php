@@ -37,7 +37,7 @@ use dml_exception;
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @group      quizaccess_ratelimit
  */
-class manager_test extends advanced_testcase {
+final class manager_test extends advanced_testcase {
 
     /**
      * Overwrites the `now` database function to return a specified timestamp.
@@ -63,7 +63,7 @@ class manager_test extends advanced_testcase {
      * @covers \quizaccess_ratelimit\manager::get_seconds_to_wait
      * @throws dml_exception
      */
-    public function test_get_seconds_to_wait_extreme_timeout() {
+    public function test_get_seconds_to_wait_extreme_timeout(): void {
         $this->resetAfterTest();
 
         $timeout = 10000000; // Ten thousand seconds.
@@ -92,7 +92,7 @@ class manager_test extends advanced_testcase {
      * @covers \quizaccess_ratelimit\manager::get_seconds_to_wait
      * @throws dml_exception
      */
-    public function test_get_seconds_to_wait_high_timeout() {
+    public function test_get_seconds_to_wait_high_timeout(): void {
         global $DB;
         $this->resetAfterTest();
 
@@ -129,7 +129,7 @@ class manager_test extends advanced_testcase {
      * @covers \quizaccess_ratelimit\manager::get_seconds_to_wait
      * @throws dml_exception
      */
-    public function test_get_seconds_to_wait_low_timeout() {
+    public function test_get_seconds_to_wait_low_timeout(): void {
         global $DB;
         $this->resetAfterTest();
 
@@ -165,7 +165,7 @@ class manager_test extends advanced_testcase {
      * @covers \quizaccess_ratelimit\manager::get_seconds_to_wait
      * @throws dml_exception
      */
-    public function test_get_seconds_to_wait_no_timeout() {
+    public function test_get_seconds_to_wait_no_timeout(): void {
         global $DB;
         $this->resetAfterTest();
 
