@@ -34,7 +34,7 @@ function xmldb_quizaccess_ratelimit_install(): bool {
         return false;
     }
 
-    if ($DB->want_read_slave()) {
+    if ($DB->want_read_replica()) {
         echo "This plugin does not support read-only database slaves. You may add the table " .
             "quizaccess_ratelimit to exclude_tables in your config. Otherwise, please uninstall " .
             "this plugin immediately.";

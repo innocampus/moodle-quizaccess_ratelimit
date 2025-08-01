@@ -24,7 +24,7 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->version = 2025031300;
-$plugin->requires = 2024100700;
+$plugin->version = 2025080100;
+$plugin->requires = 2025041401;
 $plugin->component = 'quizaccess_ratelimit';
 $plugin->maturity = MATURITY_STABLE;
