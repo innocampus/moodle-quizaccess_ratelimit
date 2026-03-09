@@ -31,7 +31,6 @@ use mod_quiz\form\preflight_check_form;
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class quizaccess_ratelimit extends \mod_quiz\local\access_rule_base {
-
     /**
      * This is the maximum possible delay (created by this plugin) before a quiz attempt can be started.
      */

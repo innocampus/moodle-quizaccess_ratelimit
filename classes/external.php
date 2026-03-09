@@ -41,7 +41,6 @@ use dml_exception;
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class external extends external_api {
-
     /**
      * Parameters for the get_waiting_time external function.
      * @return external_function_parameters

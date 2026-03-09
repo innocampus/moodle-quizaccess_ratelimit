@@ -38,7 +38,6 @@ use dml_exception;
  * @group      quizaccess_ratelimit
  */
 final class manager_test extends advanced_testcase {
-
     /**
      * Overwrites the `now` database function to return a specified timestamp.
      * Since `manager::get_seconds_to_wait` will be tested, and it calls the database's `now` function,
@@ -83,7 +82,6 @@ final class manager_test extends advanced_testcase {
         $this->set_db_time($time);
 
         $this->assertEquals(0, manager::get_seconds_to_wait());
-
     }
 
     /**
