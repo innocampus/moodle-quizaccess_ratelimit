@@ -6,7 +6,7 @@ It aims to solve the problem of high server loads, which occur when too many stu
 
 ## Requirements
 
-This plugin requires Moodle 4.1+ and a PostgreSQL database.
+This plugin requires Moodle 5.2+ and a PostgreSQL database.
 
 ## Installation
 
