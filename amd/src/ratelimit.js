@@ -7,7 +7,7 @@
 
 import $ from 'jquery';
 import Ajax from 'core/ajax';
-import ModalFactory from 'core/modal_factory';
+import Modal from 'core/modal';
 import {markFormSubmitted} from 'core_form/changechecker';
 
 const form = '#mod_quiz_preflight_form';
@@ -75,7 +75,7 @@ const delaySubmit = function(seconds, message = '') {
 
     // Tell the user what is happening when the delay is too long.
     if (seconds > 10) {
-        ModalFactory.create({
+        Modal.create({
             body: message,
         }).then(
             (modal) => modal.show()
